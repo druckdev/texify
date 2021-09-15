@@ -13,8 +13,8 @@ main(int argc, char** argv)
 	int screen = DefaultScreen(dpy);
 	Window root = RootWindow(dpy, screen);
 
-	unsigned long black = XBlackPixel(dpy, screen);
-	unsigned long white = XWhitePixel(dpy, screen);
+	unsigned long black = BlackPixel(dpy, screen);
+	unsigned long white = WhitePixel(dpy, screen);
 
 	Window win;
 	win = XCreateSimpleWindow(dpy, root, 100, 100, 100, 100, 10, black, white);
