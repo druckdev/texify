@@ -30,7 +30,8 @@ main(int argc, char** argv)
 	XMapWindow(dpy, win);
 
 	// Use pencil as cursor
-	XDefineCursor(dpy, win, XCreateFontCursor(dpy, XC_pencil));
+	Cursor pencil_cursor = XCreateFontCursor(dpy, XC_pencil);
+	XDefineCursor(dpy, win, pencil_cursor);
 
 	// Sync
 	XSync(dpy, 0);
@@ -58,6 +59,7 @@ main(int argc, char** argv)
 
 	}
 
+	XFreeCursor(dpy, pencil_cursor);
 	XCloseDisplay(dpy);
 	return EXIT_SUCCESS;
 }
