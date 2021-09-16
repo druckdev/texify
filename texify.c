@@ -78,6 +78,7 @@ main(int argc, char** argv)
 	}
 
 	XFreeCursor(dpy, pencil_cursor);
+	XFreeGC(dpy, gc);
 	XCloseDisplay(dpy);
 	return EXIT_SUCCESS;
 }
