@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 #include <X11/cursorfont.h> // XC_pencil
-#include <X11/X.h>
 #include <X11/Xlib.h>
 
 int
