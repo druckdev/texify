@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>      // XLookupString(), XK_Escape (X11/keysymdef.h)
@@ -66,11 +67,20 @@ main(int argc, char** argv)
 			}
 		} else if (event.type == MotionNotify) {
 			XMotionEvent xmotion = event.xmotion;
-			printf("x: %d, y: %d\n", xmotion.x, xmotion.y);
 
 			// Draw continuous line
 			if (last_X >= 0 && last_Y >= 0)
 				XDrawLine(dpy, win, gc, last_X, last_Y, xmotion.x, xmotion.y);
+
+			if (xmotion.x >= 0 && xmotion.y >= 0) {
+				// Get milliseconds
+				long t_msec;
+				struct timespec time;
+				clock_gettime(CLOCK_REALTIME, &time);
+				t_msec = time.tv_sec * 1e3 + time.tv_nsec / 1e6;
+
+				printf("x: %d, y: %d, t: %ld\n", xmotion.x, xmotion.y, t_msec);
+			}
 
 			last_X = xmotion.x;
 			last_Y = xmotion.y;
