@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <X11/cursorfont.h> // XC_pencil
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>      // XLookupString(), XK_Escape (X11/keysymdef.h)
+#include <X11/cursorfont.h> // XC_pencil
 
 int
 main(int argc, char** argv)
@@ -11,7 +11,7 @@ main(int argc, char** argv)
 	Display* dpy = XOpenDisplay(NULL);
 	if (!dpy)
 		return EXIT_FAILURE;
-	int screen = DefaultScreen(dpy);
+	int screen  = DefaultScreen(dpy);
 	Window root = RootWindow(dpy, screen);
 
 	unsigned long black = BlackPixel(dpy, screen);
@@ -21,8 +21,9 @@ main(int argc, char** argv)
 	win = XCreateSimpleWindow(dpy, root, 100, 100, 100, 100, 10, white, black);
 
 	// Listen to key and button presses and cursor dragging (move while click)
-	XSelectInput(dpy, win, KeyPressMask | ButtonPressMask | ButtonReleaseMask |
-	             Button1MotionMask);
+	XSelectInput(dpy, win,
+	             KeyPressMask | ButtonPressMask | ButtonReleaseMask |
+	                     Button1MotionMask);
 	// Listen for WM_DELETE_WINDOW message
 	Atom wm_delete_msg = XInternAtom(dpy, "WM_DELETE_WINDOW", True);
 	XSetWMProtocols(dpy, win, &wm_delete_msg, 1);
@@ -45,7 +46,6 @@ main(int argc, char** argv)
 	XEvent event;
 	int last_X = -1, last_Y = -1;
 	while (!XNextEvent(dpy, &event)) {
-
 		if (event.type == KeyPress) {
 			if (XLookupKeysym(&event.xkey, 0) == XK_Escape) {
 				break;
