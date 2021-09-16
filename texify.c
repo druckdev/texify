@@ -42,6 +42,7 @@ main(int argc, char** argv)
 
 	// event loop
 	XEvent event;
+	int last_X = -1, last_Y = -1;
 	while (!XNextEvent(dpy, &event)) {
 
 		if (event.type == KeyPress) {
@@ -59,9 +60,13 @@ main(int argc, char** argv)
 		} else if (event.type == MotionNotify) {
 			XMotionEvent xmotion = event.xmotion;
 			printf("x: %d, y: %d\n", xmotion.x, xmotion.y);
-			XDrawPoint(dpy, win, gc, xmotion.x, xmotion.y);
-		}
 
+			if (last_X >= 0 && last_Y >= 0)
+				XDrawLine(dpy, win, gc, last_X, last_Y, xmotion.x, xmotion.y);
+
+			last_X = xmotion.x;
+			last_Y = xmotion.y;
+		}
 	}
 
 	XFreeCursor(dpy, pencil_cursor);
