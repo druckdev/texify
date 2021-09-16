@@ -52,10 +52,12 @@ main(int argc, char** argv)
 			}
 		} else if (event.type == ButtonPress) {
 			if (event.xbutton.button == Button3) {
-				break;
+				// Clear canvas when right-clicking
+				XClearWindow(dpy, win);
 			}
 		} else if (event.type == ButtonRelease) {
 			if (event.xbutton.button == Button1) {
+				// EOL after releasing mouse click
 				last_X = last_Y = -1;
 			}
 		} else if (event.type == ClientMessage) {
@@ -66,6 +68,7 @@ main(int argc, char** argv)
 			XMotionEvent xmotion = event.xmotion;
 			printf("x: %d, y: %d\n", xmotion.x, xmotion.y);
 
+			// Draw continuous line
 			if (last_X >= 0 && last_Y >= 0)
 				XDrawLine(dpy, win, gc, last_X, last_Y, xmotion.x, xmotion.y);
 
