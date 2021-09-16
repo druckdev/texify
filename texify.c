@@ -21,7 +21,8 @@ main(int argc, char** argv)
 	win = XCreateSimpleWindow(dpy, root, 100, 100, 100, 100, 10, white, black);
 
 	// Listen to key and button presses and cursor dragging (move while click)
-	XSelectInput(dpy, win, KeyPressMask | ButtonPressMask | Button1MotionMask);
+	XSelectInput(dpy, win, KeyPressMask | ButtonPressMask | ButtonReleaseMask |
+	             Button1MotionMask);
 	// Listen for WM_DELETE_WINDOW message
 	Atom wm_delete_msg = XInternAtom(dpy, "WM_DELETE_WINDOW", True);
 	XSetWMProtocols(dpy, win, &wm_delete_msg, 1);
@@ -52,6 +53,10 @@ main(int argc, char** argv)
 		} else if (event.type == ButtonPress) {
 			if (event.xbutton.button == Button3) {
 				break;
+			}
+		} else if (event.type == ButtonRelease) {
+			if (event.xbutton.button == Button1) {
+				last_X = last_Y = -1;
 			}
 		} else if (event.type == ClientMessage) {
 			if (event.xclient.data.l[0] == wm_delete_msg) {
