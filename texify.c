@@ -18,7 +18,7 @@ main(int argc, char** argv)
 	unsigned long white = WhitePixel(dpy, screen);
 
 	Window win;
-	win = XCreateSimpleWindow(dpy, root, 100, 100, 100, 100, 10, black, white);
+	win = XCreateSimpleWindow(dpy, root, 100, 100, 100, 100, 10, white, black);
 
 	// Listen to key and button presses and cursor dragging (move while click)
 	XSelectInput(dpy, win, KeyPressMask | ButtonPressMask | Button1MotionMask);
@@ -35,6 +35,10 @@ main(int argc, char** argv)
 
 	// Sync
 	XSync(dpy, False);
+
+	// Setup drawing
+	GC gc = XCreateGC(dpy, win, 0, NULL);
+	XSetForeground(dpy, gc, white);
 
 	// event loop
 	XEvent event;
@@ -55,6 +59,7 @@ main(int argc, char** argv)
 		} else if (event.type == MotionNotify) {
 			XMotionEvent xmotion = event.xmotion;
 			printf("x: %d, y: %d\n", xmotion.x, xmotion.y);
+			XDrawPoint(dpy, win, gc, xmotion.x, xmotion.y);
 		}
 
 	}
