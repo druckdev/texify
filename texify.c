@@ -23,7 +23,7 @@ main(int argc, char** argv)
 	// Listen to key and button presses and cursor dragging (move while click)
 	XSelectInput(dpy, win, KeyPressMask | ButtonPressMask | Button1MotionMask);
 	// Listen for WM_DELETE_WINDOW message
-	Atom wm_delete_msg = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
+	Atom wm_delete_msg = XInternAtom(dpy, "WM_DELETE_WINDOW", True);
 	XSetWMProtocols(dpy, win, &wm_delete_msg, 1);
 
 	// Display the window
@@ -34,7 +34,7 @@ main(int argc, char** argv)
 	XDefineCursor(dpy, win, pencil_cursor);
 
 	// Sync
-	XSync(dpy, 0);
+	XSync(dpy, False);
 
 	// event loop
 	XEvent event;
