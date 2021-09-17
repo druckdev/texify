@@ -170,7 +170,8 @@ main(int argc, char** argv)
 			if (key == XK_Escape) {
 				break;
 			} else if (key == XK_Return) {
-				break;
+				print_drawing();
+				reset_drawing();
 			}
 		} else if (event.type == ButtonPress) {
 			if (event.xbutton.button == Button3) {
@@ -214,8 +215,6 @@ main(int argc, char** argv)
 			last.y = p.y;
 		}
 	}
-
-	print_drawing();
 
 	free_drawing();
 	X_destroy();
