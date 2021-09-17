@@ -66,14 +66,15 @@ X_destroy()
 void
 print_drawing()
 {
-	printf("\n");
 	for (size_t i = 0; i < drawing.len; ++i) {
+		if (i)
+			printf("\n");
+
 		struct shape* shape = &(drawing.shapes[i]);
 		for (size_t j = 0; j < shape->len; ++j) {
 			struct point* p = &(shape->ps[j]);
 			printf("x: %d, y: %d, msecs: %ld\n", p->x, p->y, p->msecs);
 		}
-		printf("\n");
 	}
 }
 
