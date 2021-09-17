@@ -6,6 +6,8 @@
 #include <X11/Xutil.h>      // XLookupString(), XK_Escape (X11/keysymdef.h)
 #include <X11/cursorfont.h> // XC_pencil
 
+#include "texify.h"
+
 Display* dpy;
 Window win;
 Atom wm_delete_msg;
@@ -75,7 +77,7 @@ main(int argc, char** argv)
 
 	// event loop
 	XEvent event;
-	int last_X = -1, last_Y = -1;
+	struct point last = { .x = -1, .y = -1 };
 	while (!XNextEvent(dpy, &event)) {
 		if (event.type == KeyPress) {
 			if (XLookupKeysym(&event.xkey, 0) == XK_Escape) {
@@ -86,41 +88,39 @@ main(int argc, char** argv)
 				// Clear canvas when right-clicking
 				XClearWindow(dpy, win);
 			} else if (event.xbutton.button == Button1) {
-				XButtonPressedEvent xbutton = event.xbutton;
+				struct point p = { .x     = event.xbutton.x,
+					               .y     = event.xbutton.y,
+					               .msecs = get_msec() };
 
-				if (xbutton.x >= 0 && xbutton.y >= 0) {
-					// Draw dot
-					XDrawPoint(dpy, win, gc, xbutton.x, xbutton.y);
-
-					printf("x: %d, y: %d, t: %ld\n", xbutton.x, xbutton.y,
-					       get_msec());
-
-					last_X = xbutton.x;
-					last_Y = xbutton.y;
+				if (p.x >= 0 && p.y >= 0) {
+					XDrawPoint(dpy, win, gc, p.x, p.y);
+					printf("x: %d, y: %d, t: %ld\n", p.x, p.y, p.msecs);
+					last = p;
 				}
 			}
 		} else if (event.type == ButtonRelease) {
 			if (event.xbutton.button == Button1) {
 				// EOL after releasing mouse click
-				last_X = last_Y = -1;
+				last.x = last.y = -1;
 			}
 		} else if (event.type == ClientMessage) {
 			if (event.xclient.data.l[0] == wm_delete_msg) {
 				break;
 			}
 		} else if (event.type == MotionNotify) {
-			XMotionEvent xmotion = event.xmotion;
+			struct point p = { .x     = event.xmotion.x,
+				               .y     = event.xmotion.y,
+				               .msecs = get_msec() };
 
 			// Draw continuous line
-			if (last_X >= 0 && last_Y >= 0)
-				XDrawLine(dpy, win, gc, last_X, last_Y, xmotion.x, xmotion.y);
+			if (last.x >= 0 && last.y >= 0)
+				XDrawLine(dpy, win, gc, last.x, last.y, p.x, p.y);
 
-			if (xmotion.x >= 0 && xmotion.y >= 0)
-				printf("x: %d, y: %d, t: %ld\n", xmotion.x, xmotion.y,
-				       get_msec());
+			if (p.x >= 0 && p.y >= 0)
+				printf("x: %d, y: %d, t: %ld\n", p.x, p.y, get_msec());
 
-			last_X = xmotion.x;
-			last_Y = xmotion.y;
+			last.x = p.x;
+			last.y = p.y;
 		}
 	}
 
