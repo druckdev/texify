@@ -55,6 +55,25 @@ main(int argc, char** argv)
 			if (event.xbutton.button == Button3) {
 				// Clear canvas when right-clicking
 				XClearWindow(dpy, win);
+			} else if (event.xbutton.button == Button1) {
+				XButtonPressedEvent xbutton = event.xbutton;
+
+				if (xbutton.x >= 0 && xbutton.y >= 0) {
+					// Draw dot
+					XDrawPoint(dpy, win, gc, xbutton.x, xbutton.y);
+
+					// Get milliseconds
+					long t_msec;
+					struct timespec time;
+					clock_gettime(CLOCK_REALTIME, &time);
+					t_msec = time.tv_sec * 1e3 + time.tv_nsec / 1e6;
+
+					printf("x: %d, y: %d, t: %ld\n", xbutton.x, xbutton.y,
+					       t_msec);
+
+					last_X = xbutton.x;
+					last_Y = xbutton.y;
+				}
 			}
 		} else if (event.type == ButtonRelease) {
 			if (event.xbutton.button == Button1) {
