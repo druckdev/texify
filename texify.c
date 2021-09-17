@@ -80,7 +80,10 @@ main(int argc, char** argv)
 	struct point last = { .x = -1, .y = -1 };
 	while (!XNextEvent(dpy, &event)) {
 		if (event.type == KeyPress) {
-			if (XLookupKeysym(&event.xkey, 0) == XK_Escape) {
+			KeySym key = XLookupKeysym(&event.xkey, 0);
+			if (key == XK_Escape) {
+				break;
+			} else if (key == XK_Return) {
 				break;
 			}
 		} else if (event.type == ButtonPress) {
