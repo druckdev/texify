@@ -96,6 +96,15 @@ free_drawing()
 	free(drawing.shapes);
 }
 
+int
+reset_drawing()
+{
+	XClearWindow(dpy, win);
+
+	free_drawing();
+	return init_drawing();
+}
+
 long
 get_msec()
 {
@@ -172,8 +181,9 @@ main(int argc, char** argv)
 			}
 		} else if (event.type == ButtonPress) {
 			if (event.xbutton.button == Button3) {
-				// Clear canvas when right-clicking
-				XClearWindow(dpy, win);
+				// Reset canvas when right-clicking
+				if (!reset_drawing())
+					break;
 			} else if (event.xbutton.button == Button1) {
 				create_shape();
 
