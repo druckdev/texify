@@ -14,6 +14,8 @@ Atom wm_delete_msg;
 Cursor pencil_cursor;
 GC gc;
 
+struct drawing drawing;
+
 int
 X_setup()
 {
@@ -61,6 +63,29 @@ X_destroy()
 	XCloseDisplay(dpy);
 }
 
+void
+print_drawing()
+{
+	printf("\n");
+	for (size_t i = 0; i < drawing.len; ++i) {
+		struct shape* shape = &(drawing.shapes[i]);
+		for (size_t j = 0; j < shape->len; ++j) {
+			struct point* p = &(shape->ps[j]);
+			printf("x: %d, y: %d, msecs: %ld\n", p->x, p->y, p->msecs);
+		}
+		printf("\n");
+	}
+}
+
+void
+free_drawing()
+{
+	for (size_t i = 0; i < drawing.len; ++i) {
+		free(drawing.shapes[i].ps);
+	}
+	free(drawing.shapes);
+}
+
 long
 get_msec()
 {
@@ -70,10 +95,62 @@ get_msec()
 }
 
 int
+add_point(struct point* p)
+{
+	if (!drawing.len)
+		return 0;
+
+	struct shape* shape = &drawing.shapes[drawing.len - 1];
+
+	if (shape->len >= shape->size) {
+		shape->ps = realloc(shape->ps, (shape->size += INIT_NUM_POINTS) *
+		                                       sizeof(*shape->ps));
+		if (!shape->ps)
+			return 0;
+	}
+
+	shape->ps[shape->len] = *p;
+	++shape->len;
+
+	return 1;
+}
+
+int
+create_shape()
+{
+	if (drawing.len >= drawing.size) {
+		drawing.shapes = realloc(drawing.shapes,
+		                         ++drawing.size * sizeof(*drawing.shapes));
+		if (!drawing.shapes)
+			return 0;
+	}
+
+	struct shape* shape = &drawing.shapes[drawing.len];
+
+	shape->len  = 0;
+	shape->size = INIT_NUM_POINTS;
+	shape->ps   = malloc(shape->size * sizeof(*shape->ps));
+	if (!shape->ps)
+		return 0;
+
+	++drawing.len;
+	return 1;
+}
+
+int
 main(int argc, char** argv)
 {
 	if (!X_setup())
 		return EXIT_FAILURE;
+
+	// Init drawing
+	drawing.len    = 0;
+	drawing.size   = INIT_DRAWING_SIZE;
+	drawing.shapes = calloc(drawing.size, sizeof(*drawing.shapes));
+	if (!drawing.shapes) {
+		X_destroy();
+		return EXIT_FAILURE;
+	}
 
 	// event loop
 	XEvent event;
@@ -91,13 +168,15 @@ main(int argc, char** argv)
 				// Clear canvas when right-clicking
 				XClearWindow(dpy, win);
 			} else if (event.xbutton.button == Button1) {
+				create_shape();
+
 				struct point p = { .x     = event.xbutton.x,
 					               .y     = event.xbutton.y,
 					               .msecs = get_msec() };
 
 				if (p.x >= 0 && p.y >= 0) {
 					XDrawPoint(dpy, win, gc, p.x, p.y);
-					printf("x: %d, y: %d, t: %ld\n", p.x, p.y, p.msecs);
+					add_point(&p);
 					last = p;
 				}
 			}
@@ -120,13 +199,16 @@ main(int argc, char** argv)
 				XDrawLine(dpy, win, gc, last.x, last.y, p.x, p.y);
 
 			if (p.x >= 0 && p.y >= 0)
-				printf("x: %d, y: %d, t: %ld\n", p.x, p.y, get_msec());
+				add_point(&p);
 
 			last.x = p.x;
 			last.y = p.y;
 		}
 	}
 
+	print_drawing();
+
+	free_drawing();
 	X_destroy();
 	return EXIT_SUCCESS;
 }
