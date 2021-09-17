@@ -6,6 +6,59 @@
 #include <X11/Xutil.h>      // XLookupString(), XK_Escape (X11/keysymdef.h)
 #include <X11/cursorfont.h> // XC_pencil
 
+Display* dpy;
+Window win;
+Atom wm_delete_msg;
+Cursor pencil_cursor;
+GC gc;
+
+int
+X_setup()
+{
+	dpy = XOpenDisplay(NULL);
+	if (!dpy)
+		return 0;
+	int screen  = DefaultScreen(dpy);
+	Window root = RootWindow(dpy, screen);
+
+	unsigned long black = BlackPixel(dpy, screen);
+	unsigned long white = WhitePixel(dpy, screen);
+
+	win = XCreateSimpleWindow(dpy, root, 100, 100, 100, 100, 10, white, black);
+
+	// Listen to key and button presses and cursor dragging (move while click)
+	XSelectInput(dpy, win,
+	             KeyPressMask | ButtonPressMask | ButtonReleaseMask |
+	                     Button1MotionMask);
+	// Listen for WM_DELETE_WINDOW message
+	wm_delete_msg = XInternAtom(dpy, "WM_DELETE_WINDOW", True);
+	XSetWMProtocols(dpy, win, &wm_delete_msg, 1);
+
+	// Display the window
+	XMapWindow(dpy, win);
+
+	// Use pencil as cursor
+	pencil_cursor = XCreateFontCursor(dpy, XC_pencil);
+	XDefineCursor(dpy, win, pencil_cursor);
+
+	// Sync
+	XSync(dpy, False);
+
+	// Setup drawing
+	gc = XCreateGC(dpy, win, 0, NULL);
+	XSetForeground(dpy, gc, white);
+
+	return 1;
+}
+
+void
+X_destroy()
+{
+	XFreeCursor(dpy, pencil_cursor);
+	XFreeGC(dpy, gc);
+	XCloseDisplay(dpy);
+}
+
 long
 get_msec()
 {
@@ -17,39 +70,8 @@ get_msec()
 int
 main(int argc, char** argv)
 {
-	Display* dpy = XOpenDisplay(NULL);
-	if (!dpy)
+	if (!X_setup())
 		return EXIT_FAILURE;
-	int screen  = DefaultScreen(dpy);
-	Window root = RootWindow(dpy, screen);
-
-	unsigned long black = BlackPixel(dpy, screen);
-	unsigned long white = WhitePixel(dpy, screen);
-
-	Window win;
-	win = XCreateSimpleWindow(dpy, root, 100, 100, 100, 100, 10, white, black);
-
-	// Listen to key and button presses and cursor dragging (move while click)
-	XSelectInput(dpy, win,
-	             KeyPressMask | ButtonPressMask | ButtonReleaseMask |
-	                     Button1MotionMask);
-	// Listen for WM_DELETE_WINDOW message
-	Atom wm_delete_msg = XInternAtom(dpy, "WM_DELETE_WINDOW", True);
-	XSetWMProtocols(dpy, win, &wm_delete_msg, 1);
-
-	// Display the window
-	XMapWindow(dpy, win);
-
-	// Use pencil as cursor
-	Cursor pencil_cursor = XCreateFontCursor(dpy, XC_pencil);
-	XDefineCursor(dpy, win, pencil_cursor);
-
-	// Sync
-	XSync(dpy, False);
-
-	// Setup drawing
-	GC gc = XCreateGC(dpy, win, 0, NULL);
-	XSetForeground(dpy, gc, white);
 
 	// event loop
 	XEvent event;
@@ -102,8 +124,6 @@ main(int argc, char** argv)
 		}
 	}
 
-	XFreeCursor(dpy, pencil_cursor);
-	XFreeGC(dpy, gc);
-	XCloseDisplay(dpy);
+	X_destroy();
 	return EXIT_SUCCESS;
 }
