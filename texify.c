@@ -1,3 +1,12 @@
+/*
+ * Usage:
+ *   Draw on the canvas simply with the mouse.
+ *   Following shortcuts are available:
+ *     <Escape>      - close the window
+ *     <Right-Click> - reset the canvas
+ *     <Return>      - print out the points in the canvas and reset it
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
