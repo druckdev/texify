@@ -78,6 +78,15 @@ print_drawing()
 	}
 }
 
+int
+init_drawing()
+{
+	drawing.len    = 0;
+	drawing.size   = INIT_DRAWING_SIZE;
+	drawing.shapes = calloc(drawing.size, sizeof(*drawing.shapes));
+	return !!drawing.shapes;
+}
+
 void
 free_drawing()
 {
@@ -145,10 +154,7 @@ main(int argc, char** argv)
 		return EXIT_FAILURE;
 
 	// Init drawing
-	drawing.len    = 0;
-	drawing.size   = INIT_DRAWING_SIZE;
-	drawing.shapes = calloc(drawing.size, sizeof(*drawing.shapes));
-	if (!drawing.shapes) {
+	if (!init_drawing()) {
 		X_destroy();
 		return EXIT_FAILURE;
 	}
