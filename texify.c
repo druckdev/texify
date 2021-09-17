@@ -6,6 +6,14 @@
 #include <X11/Xutil.h>      // XLookupString(), XK_Escape (X11/keysymdef.h)
 #include <X11/cursorfont.h> // XC_pencil
 
+long
+get_msec()
+{
+	struct timespec time;
+	clock_gettime(CLOCK_REALTIME, &time);
+	return time.tv_sec * 1e3 + time.tv_nsec / 1e6;
+}
+
 int
 main(int argc, char** argv)
 {
@@ -62,14 +70,8 @@ main(int argc, char** argv)
 					// Draw dot
 					XDrawPoint(dpy, win, gc, xbutton.x, xbutton.y);
 
-					// Get milliseconds
-					long t_msec;
-					struct timespec time;
-					clock_gettime(CLOCK_REALTIME, &time);
-					t_msec = time.tv_sec * 1e3 + time.tv_nsec / 1e6;
-
 					printf("x: %d, y: %d, t: %ld\n", xbutton.x, xbutton.y,
-					       t_msec);
+					       get_msec());
 
 					last_X = xbutton.x;
 					last_Y = xbutton.y;
@@ -91,15 +93,9 @@ main(int argc, char** argv)
 			if (last_X >= 0 && last_Y >= 0)
 				XDrawLine(dpy, win, gc, last_X, last_Y, xmotion.x, xmotion.y);
 
-			if (xmotion.x >= 0 && xmotion.y >= 0) {
-				// Get milliseconds
-				long t_msec;
-				struct timespec time;
-				clock_gettime(CLOCK_REALTIME, &time);
-				t_msec = time.tv_sec * 1e3 + time.tv_nsec / 1e6;
-
-				printf("x: %d, y: %d, t: %ld\n", xmotion.x, xmotion.y, t_msec);
-			}
+			if (xmotion.x >= 0 && xmotion.y >= 0)
+				printf("x: %d, y: %d, t: %ld\n", xmotion.x, xmotion.y,
+				       get_msec());
 
 			last_X = xmotion.x;
 			last_Y = xmotion.y;
