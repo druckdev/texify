@@ -2,8 +2,9 @@
 #define TEXIFY_H
 
 #include <stddef.h>
+
+#define INIT_SHAPE_SIZE 100
 #define INIT_DRAWING_SIZE 3
-#define INIT_NUM_POINTS 100
 
 // Simple point in 2d space with a timestamp when it was drawn
 struct point {

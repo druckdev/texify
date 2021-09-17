@@ -103,7 +103,7 @@ add_point(struct point* p)
 	struct shape* shape = &drawing.shapes[drawing.len - 1];
 
 	if (shape->len >= shape->size) {
-		shape->ps = realloc(shape->ps, (shape->size += INIT_NUM_POINTS) *
+		shape->ps = realloc(shape->ps, (shape->size += INIT_SHAPE_SIZE) *
 		                                       sizeof(*shape->ps));
 		if (!shape->ps)
 			return 0;
@@ -128,7 +128,7 @@ create_shape()
 	struct shape* shape = &drawing.shapes[drawing.len];
 
 	shape->len  = 0;
-	shape->size = INIT_NUM_POINTS;
+	shape->size = INIT_SHAPE_SIZE;
 	shape->ps   = malloc(shape->size * sizeof(*shape->ps));
 	if (!shape->ps)
 		return 0;
