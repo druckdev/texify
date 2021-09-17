@@ -20,8 +20,7 @@ int
 X_setup()
 {
 	dpy = XOpenDisplay(NULL);
-	if (!dpy)
-		return 0;
+	if (!dpy) return 0;
 	int screen  = DefaultScreen(dpy);
 	Window root = RootWindow(dpy, screen);
 
@@ -67,8 +66,7 @@ void
 print_drawing()
 {
 	for (size_t i = 0; i < drawing.len; ++i) {
-		if (i)
-			printf("\n");
+		if (i) printf("\n");
 
 		struct shape* shape = &(drawing.shapes[i]);
 		for (size_t j = 0; j < shape->len; ++j) {
@@ -116,16 +114,14 @@ get_msec()
 int
 add_point(struct point* p)
 {
-	if (!drawing.len)
-		return 0;
+	if (!drawing.len) return 0;
 
 	struct shape* shape = &drawing.shapes[drawing.len - 1];
 
 	if (shape->len >= shape->size) {
 		shape->ps = realloc(shape->ps, (shape->size += INIT_SHAPE_SIZE) *
 		                                       sizeof(*shape->ps));
-		if (!shape->ps)
-			return 0;
+		if (!shape->ps) return 0;
 	}
 
 	shape->ps[shape->len] = *p;
@@ -140,8 +136,7 @@ create_shape()
 	if (drawing.len >= drawing.size) {
 		drawing.shapes = realloc(drawing.shapes,
 		                         ++drawing.size * sizeof(*drawing.shapes));
-		if (!drawing.shapes)
-			return 0;
+		if (!drawing.shapes) return 0;
 	}
 
 	struct shape* shape = &drawing.shapes[drawing.len];
@@ -149,8 +144,7 @@ create_shape()
 	shape->len  = 0;
 	shape->size = INIT_SHAPE_SIZE;
 	shape->ps   = malloc(shape->size * sizeof(*shape->ps));
-	if (!shape->ps)
-		return 0;
+	if (!shape->ps) return 0;
 
 	++drawing.len;
 	return 1;
@@ -159,8 +153,7 @@ create_shape()
 int
 main(int argc, char** argv)
 {
-	if (!X_setup())
-		return EXIT_FAILURE;
+	if (!X_setup()) return EXIT_FAILURE;
 
 	// Init drawing
 	if (!init_drawing()) {
@@ -182,8 +175,7 @@ main(int argc, char** argv)
 		} else if (event.type == ButtonPress) {
 			if (event.xbutton.button == Button3) {
 				// Reset canvas when right-clicking
-				if (!reset_drawing())
-					break;
+				if (!reset_drawing()) break;
 			} else if (event.xbutton.button == Button1) {
 				create_shape();
 
@@ -204,6 +196,7 @@ main(int argc, char** argv)
 			}
 		} else if (event.type == ClientMessage) {
 			if (event.xclient.data.l[0] == wm_delete_msg) {
+				// Window is closed by user for example
 				break;
 			}
 		} else if (event.type == MotionNotify) {
@@ -215,8 +208,7 @@ main(int argc, char** argv)
 			if (last.x >= 0 && last.y >= 0)
 				XDrawLine(dpy, win, gc, last.x, last.y, p.x, p.y);
 
-			if (p.x >= 0 && p.y >= 0)
-				add_point(&p);
+			if (p.x >= 0 && p.y >= 0) add_point(&p);
 
 			last.x = p.x;
 			last.y = p.y;
