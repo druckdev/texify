@@ -180,7 +180,7 @@ main(int argc, char** argv)
 			if (key == XK_Escape) {
 				break;
 			} else if (key == XK_Return) {
-				print_drawing();
+				// print_drawing();
 
 				char* enc_str = encode(&drawing);
 				classify(enc_str);
