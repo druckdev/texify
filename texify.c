@@ -16,6 +16,7 @@
 #include <X11/cursorfont.h> // XC_pencil
 
 #include "texify.h"
+#include "classifier/detexify_kirelabs_org.h"
 
 Display* dpy;
 Window win;
@@ -180,6 +181,11 @@ main(int argc, char** argv)
 				break;
 			} else if (key == XK_Return) {
 				print_drawing();
+
+				char* enc_str = encode(&drawing);
+				classify(enc_str);
+				free(enc_str);
+
 				reset_drawing();
 			}
 		} else if (event.type == ButtonPress) {
