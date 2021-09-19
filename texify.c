@@ -13,7 +13,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>      // XLookupString(), XK_Escape (X11/keysymdef.h)
-#include <X11/cursorfont.h> // XC_pencil
+#include <X11/cursorfont.h> // XC_pencil, XC_watch
 
 #include "texify.h"
 #include "classifier/detexify_kirelabs_org.h"
@@ -21,7 +21,7 @@
 Display* dpy;
 Window win;
 Atom wm_delete_msg;
-Cursor pencil_cursor;
+Cursor pencil_cursor, watch_cursor;
 GC gc;
 
 struct drawing drawing;
@@ -50,8 +50,9 @@ X_setup()
 	// Display the window
 	XMapWindow(dpy, win);
 
-	// Use pencil as cursor
+	// Prepare cursors and use pencil
 	pencil_cursor = XCreateFontCursor(dpy, XC_pencil);
+	watch_cursor = XCreateFontCursor(dpy, XC_watch);
 	XDefineCursor(dpy, win, pencil_cursor);
 
 	// Sync
@@ -68,6 +69,7 @@ void
 X_destroy()
 {
 	XFreeCursor(dpy, pencil_cursor);
+	XFreeCursor(dpy, watch_cursor);
 	XFreeGC(dpy, gc);
 	XCloseDisplay(dpy);
 }
@@ -108,6 +110,7 @@ int
 reset_drawing()
 {
 	XClearWindow(dpy, win);
+	XFlush(dpy);
 
 	free_drawing();
 	return init_drawing();
@@ -182,10 +185,14 @@ main(int argc, char** argv)
 			} else if (key == XK_Return) {
 				// print_drawing();
 
+				XDefineCursor(dpy, win, watch_cursor);
+				XFlush(dpy);
+
 				char* enc_str = encode(&drawing);
 				classify(enc_str);
 				free(enc_str);
 
+				XDefineCursor(dpy, win, pencil_cursor);
 				reset_drawing();
 			}
 		} else if (event.type == ButtonPress) {
