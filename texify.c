@@ -7,6 +7,7 @@
  *     <Return>      - print out the points in the canvas and reset it
  */
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -86,6 +87,9 @@ print_drawing()
 			printf("x: %d, y: %d, msecs: %ld\n", p->x, p->y, p->msecs);
 		}
 	}
+
+	printf("\n%d, %d, %d, %d\n", drawing.max_x, drawing.min_x, drawing.max_y,
+	       drawing.min_y);
 }
 
 int
@@ -94,6 +98,8 @@ init_drawing()
 	drawing.len    = 0;
 	drawing.size   = INIT_DRAWING_SIZE;
 	drawing.shapes = calloc(drawing.size, sizeof(*drawing.shapes));
+	drawing.max_x = drawing.max_y = INT_MIN;
+	drawing.min_x = drawing.min_y = INT_MAX;
 	return !!drawing.shapes;
 }
 
@@ -129,6 +135,7 @@ add_point(struct point* p)
 {
 	if (!drawing.len) return 0;
 
+	// Get last/current shape
 	struct shape* shape = &drawing.shapes[drawing.len - 1];
 
 	if (shape->len >= shape->size) {
@@ -139,6 +146,12 @@ add_point(struct point* p)
 
 	shape->ps[shape->len] = *p;
 	++shape->len;
+
+	// Update max and min coordinates
+	if (p->x > drawing.max_x) drawing.max_x = p->x;
+	if (p->x < drawing.min_x) drawing.min_x = p->x;
+	if (p->y > drawing.max_y) drawing.max_y = p->y;
+	if (p->y < drawing.min_y) drawing.min_y = p->y;
 
 	return 1;
 }

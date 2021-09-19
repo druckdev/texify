@@ -24,6 +24,9 @@ struct shape {
 struct drawing {
 	struct shape* shapes;
 	size_t len, size;
+
+	int max_x, min_x;
+	int max_y, min_y;
 };
 
 #endif /* TEXIFY_H */

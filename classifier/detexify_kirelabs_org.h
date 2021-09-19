@@ -1,6 +1,8 @@
 #ifndef CLASSIFIER_DETEXIFY_KIRELABS_ORG_H
 #define CLASSIFIER_DETEXIFY_KIRELABS_ORG_H
 
+#include "../texify.h"
+
 #define CLASSIFIER_URL "http://detexify.kirelabs.org/api/classify"
 
 #define COMMA "%2C"
