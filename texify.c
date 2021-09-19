@@ -15,8 +15,8 @@
 #include <X11/Xutil.h>      // XLookupString(), XK_Escape (X11/keysymdef.h)
 #include <X11/cursorfont.h> // XC_pencil, XC_watch
 
-#include "texify.h"
 #include "classifier/detexify_kirelabs_org.h"
+#include "texify.h"
 
 Display* dpy;
 Window win;
@@ -52,7 +52,7 @@ X_setup()
 
 	// Prepare cursors and use pencil
 	pencil_cursor = XCreateFontCursor(dpy, XC_pencil);
-	watch_cursor = XCreateFontCursor(dpy, XC_watch);
+	watch_cursor  = XCreateFontCursor(dpy, XC_watch);
 	XDefineCursor(dpy, win, pencil_cursor);
 
 	// Sync
