@@ -5,6 +5,15 @@
 
 #define CLASSIFIER_URL "http://detexify.kirelabs.org/api/classify"
 
+#ifdef CLASSIFIER_CANVAS_WIDTH
+#undef CLASSIFIER_CANVAS_WIDTH
+#endif
+#ifdef CLASSIFIER_CANVAS_HEIGHT
+#undef CLASSIFIER_CANVAS_HEIGHT
+#endif
+#define CLASSIFIER_CANVAS_WIDTH 280
+#define CLASSIFIER_CANVAS_HEIGHT CLASSIFIER_CANVAS_WIDTH
+
 #define COMMA "%2C"
 #define COLON "%3A"
 #define QUOTE "%22"

@@ -6,6 +6,8 @@
 #define INIT_SHAPE_SIZE 100
 #define INIT_DRAWING_SIZE 3
 
+#define PADDING 0.1
+
 // Simple point in 2d space with a timestamp when it was drawn
 struct point {
 	int x, y;

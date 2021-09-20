@@ -18,6 +18,7 @@
 
 #include "classifier/detexify_kirelabs_org.h"
 #include "texify.h"
+#include "utils.h"
 
 Display* dpy;
 Window win;
@@ -122,6 +123,31 @@ reset_drawing()
 	return init_drawing();
 }
 
+void
+normalize_drawing()
+{
+	int min2_x = CLASSIFIER_CANVAS_WIDTH * PADDING;
+	int max2_x = CLASSIFIER_CANVAS_WIDTH * (1 - PADDING);
+	int min2_y = CLASSIFIER_CANVAS_HEIGHT * PADDING;
+	int max2_y = CLASSIFIER_CANVAS_HEIGHT * (1 - PADDING);
+
+	for (size_t i = 0; i < drawing.len; ++i) {
+		struct shape* shape = &(drawing.shapes[i]);
+
+		for (size_t j = 0; j < shape->len; ++j) {
+			struct point* p = &(shape->ps[j]);
+
+			p->x = map_n(p->x, drawing.min_x, drawing.max_x, min2_x, max2_x);
+			p->y = map_n(p->y, drawing.min_y, drawing.max_y, min2_y, max2_y);
+		}
+	}
+
+	drawing.min_x = min2_x;
+	drawing.max_x = max2_x;
+	drawing.min_y = min2_y;
+	drawing.max_y = max2_y;
+}
+
 long
 get_msec()
 {
@@ -196,6 +222,8 @@ main(int argc, char** argv)
 			if (key == XK_Escape) {
 				break;
 			} else if (key == XK_Return) {
+				normalize_drawing();
+
 				// print_drawing();
 
 				XDefineCursor(dpy, win, watch_cursor);
